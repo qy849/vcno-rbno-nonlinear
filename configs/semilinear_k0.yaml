@@ -1,0 +1,28 @@
+# Linear control: QCD heat conduction (kappa = 0), same code path as kappa = 1e3.
+name: semilinear_k0
+title: "Heat conduction, $\\kappa=0$"
+problem: {type: semilinear, kappa: 0.0, quadrature_degree: 6}
+mesh: {num_x: 128, num_y: 128, length_x: 1.0, length_y: 1.0}
+parameters:              # QCD's 5000 train + 500 test samples, reproduced exactly
+  dir: data/semilinear/parameters
+  type: mini_squares_qcd
+  num_samples: 5500
+  qcd_ranks: 50
+splits:                  # QCD: train 0-2999, validation 4500-4999, test = QCD test set
+  train: [0, 3000]
+  val: [4500, 5000]
+  test: [5000, 5500]
+  snapshots: [0, 500]                 # POD snapshots of QCD
+solver: {initial_guess: linear, jacobian: gauss_newton, snes_max_it: 50}
+pod: {num_snapshots: 500, num_basis: 128}
+model: {type: qcd_cnn, activation: leakyrelu, init: xavier_uniform}
+train:                   # optimizer and schedule as for the quasilinear / hyperelastic benchmarks; lr, eta_min,
+  device: cuda:1             # epochs, batch size tuned on the validation loss (scripts/07_tune.sh, results/semilinear_k0/tune)
+  seed: 0
+  epochs: 100
+  batch_size: 50
+  normalize_input: false
+  optimizer: {type: muon_auxadam, lr: 5.0e-03, muon_lr: 5.0e-03, adam_lr: 5.0e-03, weight_decay: 1.0e-4,
+              muon_kwargs: {momentum: 0.95}, adam_kwargs: {betas: [0.9, 0.95], eps: 1.0e-10}}
+  scheduler: {type: cosine, t_max: 100, eta_min: 5.0e-05}
+eval: {batch_size: 100}

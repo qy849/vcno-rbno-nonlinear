@@ -1,0 +1,31 @@
+# Baselines of the hyperelastic benchmark: settings and budgets of the original repository.
+fno:
+  seed: 0
+  train: {first: 2000}             # first 2000 converged snapshots
+  val: {first: 200, offset: 2000}  # the next 200
+  model: {modes: [32, 32], hidden_channels: 128, n_layers: 4}
+  optim: {epochs: 300, batch_size: 20, lr: 1.0e-3, weight_decay: 1.0e-2, scheduler: cosine, eta_min: 1.0e-6}
+pca_net:
+  seed: 0
+  train: {first: 2000}
+  val: {first: 200, offset: 2000}
+  model: {num_input_basis: 128, num_output_basis: 256, hidden_dims: [1024, 2048, 1024], activation: selu}
+  standardize_input: false
+  standardize_output: false
+  optim: {epochs: 3000, batch_size: 100, lr: 1.0e-3, weight_decay: 1.0e-2, lr_step_size: 50, lr_gamma: 0.9}
+fc_pino:
+  seed: 0
+  train: {first: 1000}
+  val: {first: 100, offset: 1000}
+  num_physics: 5000                # first 5000 parameter rows outside the test and validation rows
+  model: {modes: [32, 32], hidden_channels: 128, n_layers: 4, fc_degree: 3, fc_cont_points: 50}
+  optim: {data_iterations: 4000, physics_iterations: 6000, batch_size: 10, lr: 1.0e-3, weight_decay: 1.0e-2,
+          lr_gamma: 0.8, grad_clip: 1.0, validate_every: 100}
+  weights: {physics: 1.0, bc: 1.0, data: 1.0}
+  detf_floor: 1.0e-3
+rbno_data_loss:                    # optimizer and schedule of the RBNO (configs/hyperelastic.yaml)
+  seed: 0
+  train: {first: 2000}
+  val: {first: 200, offset: 2000}
+  epochs: 100
+  batch_size: 200

@@ -1,0 +1,42 @@
+# Compressible Neo-Hookean elasticity: QCD clamped body under traction.
+name: hyperelastic
+title: "Hyperelastic"
+problem: {type: hyperelastic, quadrature_degree: 8}
+mesh: {num_x: 128, num_y: 64, length_x: 2.0, length_y: 1.0}
+parameters:
+  dir: data/hyperelastic/parameters
+  type: shifted_lognormal
+  num_samples: 10000
+  gamma: 0.15
+  delta: 1.5
+  shift: 1.0
+  seed: 0
+  robin_bc: true
+splits:                  # as in the original repository
+  train: [0, 5000]
+  val: [5500, 6000]
+  test: [5000, 5500]
+  snapshots: [0, 3000]   # POD (first 1000 converged), baselines (2000 + 200 validation)
+solver:
+  initial_guess: mean_parameter_continuation
+  jacobian: gauss_newton
+  snes_max_it: 120
+  seed_loads: [0.1, 0.4]            # cold ramp for the mean-parameter seed
+  attempts:                         # tried in order until one converges
+    - {loads: [0.4, 1.0], num_steps: 3, start: seed}
+    - {loads: [0.4, 1.0], num_steps: 10, start: seed}
+    - {loads: [0.1, 1.0], num_steps: 20, start: zero}
+pod: {num_snapshots: 1000, num_basis: 256}
+model: {type: cnn, width: 512, activation: gelu, hidden_channels: [128, 256, 512]}
+train:
+  device: cuda:0
+  seed: 0
+  epochs: 100
+  batch_size: 200
+  normalize_input: true
+  compile: false          # the old runs used torch.compile; the cost is dominated by FE assembly
+  optimizer: {type: muon_auxadam, lr: 1.0e-3, muon_lr: 1.0e-3, adam_lr: 1.0e-3, weight_decay: 1.0e-4,
+              muon_kwargs: {momentum: 0.95}, adam_kwargs: {betas: [0.9, 0.95], eps: 1.0e-10}}
+  scheduler: {type: cosine, t_max: 100, eta_min: 2.5e-5}
+eval: {batch_size: 100}
+stability: {num_params: 50, resolutions: [32, 64, 128], newton: all}

@@ -1,0 +1,20 @@
+# conda env create -f environment/environment.yml
+name: rbno
+channels:
+  - conda-forge
+dependencies:
+  - python=3.11
+  - fenics-dolfinx=0.10.0
+  - mpich
+  - mpi4py
+  - petsc4py
+  - numpy
+  - scipy
+  - matplotlib
+  - pandas
+  - pyyaml
+  - tqdm
+  - pip
+  - pip:
+      - torch>=2.9
+      - neuraloperator==2.0.0

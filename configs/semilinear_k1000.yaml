@@ -1,0 +1,29 @@
+# Semilinear diffusion--reaction: QCD heat conduction + kappa u^3, kappa = 1e3.
+name: semilinear_k1000
+title: "Semilinear, $\\kappa=10^3$"
+problem: {type: semilinear, kappa: 1000.0, quadrature_degree: 6}
+mesh: {num_x: 128, num_y: 128, length_x: 1.0, length_y: 1.0}
+parameters:              # QCD's 5000 train + 500 test samples, reproduced exactly
+  dir: data/semilinear/parameters
+  type: mini_squares_qcd
+  num_samples: 5500
+  qcd_ranks: 50
+splits:                  # QCD: train 0-2999, validation 4500-4999, test = QCD test set
+  train: [0, 3000]
+  val: [4500, 5000]
+  test: [5000, 5500]
+  snapshots: [[0, 1000], [4500, 5000]]   # POD (first 500), baselines (1000 pairs, labelled validation)
+solver: {initial_guess: linear, jacobian: gauss_newton, snes_max_it: 50}
+pod: {num_snapshots: 500, num_basis: 128}
+model: {type: qcd_cnn, activation: leakyrelu, init: xavier_uniform}
+train:                   # optimizer and schedule as for the quasilinear / hyperelastic benchmarks; lr, eta_min,
+  device: cuda:0             # epochs, batch size tuned on the validation loss (scripts/07_tune.sh, results/semilinear_k1000/tune)
+  seed: 0
+  epochs: 100
+  batch_size: 50
+  normalize_input: false
+  optimizer: {type: muon_auxadam, lr: 3.0e-3, muon_lr: 3.0e-3, adam_lr: 3.0e-3, weight_decay: 1.0e-4,
+              muon_kwargs: {momentum: 0.95}, adam_kwargs: {betas: [0.9, 0.95], eps: 1.0e-10}}
+  scheduler: {type: cosine, t_max: 100, eta_min: 3.0e-5}
+eval: {batch_size: 100}
+stability: {num_params: 50, resolutions: [32, 64, 128], newton: all}

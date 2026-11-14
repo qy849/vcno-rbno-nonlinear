@@ -1,0 +1,34 @@
+# Quasilinear diffusion: QCD Darcy flow with permeability p (1 + u^2).
+name: quasilinear
+title: "Quasilinear"
+problem: {type: quasilinear, quadrature_degree: 8}
+mesh: {num_x: 128, num_y: 128, length_x: 1.0, length_y: 1.0}
+parameters:
+  dir: data/quasilinear/parameters
+  type: shifted_lognormal
+  num_samples: 10000
+  gamma: 0.15
+  delta: 1.5
+  shift: 0.01
+  seed: 0
+  robin_bc: true
+splits:                  # as in the original repository
+  train: [0, 8000]
+  val: [8500, 9300]
+  test: [8000, 8500]
+  snapshots: [0, 2500]   # POD (first 1000), baselines (2000 + 200 validation)
+solver: {initial_guess: mean_parameter, jacobian: gauss_newton, snes_max_it: 100}
+pod: {num_snapshots: 1000, num_basis: 512}
+model: {type: cnn, width: 512, activation: gelu, hidden_channels: [128, 256, 512]}
+train:
+  device: cuda:0
+  seed: 0
+  epochs: 100
+  batch_size: 200
+  normalize_input: true
+  compile: false          # the old runs used torch.compile; the cost is dominated by FE assembly
+  optimizer: {type: muon_auxadam, lr: 1.0e-2, muon_lr: 1.0e-2, adam_lr: 1.0e-2, weight_decay: 1.0e-4,
+              muon_kwargs: {momentum: 0.95}, adam_kwargs: {betas: [0.9, 0.95], eps: 1.0e-10}}
+  scheduler: {type: cosine, t_max: 100, eta_min: 5.0e-4}
+eval: {batch_size: 100}
+stability: {num_params: 50, resolutions: [32, 64, 128], newton: all}

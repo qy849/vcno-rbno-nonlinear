@@ -1,0 +1,34 @@
+# Baselines of the semilinear benchmark: architectures of QCD (heat conduction) and its
+# matched budgets -- PCA-Net, FNO and the RBNO ablations use the 500 POD snapshots (rows
+# 0-499), FC-PINO 1000 labelled pairs and the 3000 residual parameters; validation on the
+# labelled rows 4500-4999 as in QCD.
+fno:
+  seed: 0
+  train: {range: [0, 500]}
+  val: {range: [4500, 4550]}       # QCD: 50 validation samples
+  model: {modes: [32, 32], hidden_channels: 128, n_layers: 4}
+  optim: {epochs: 300, batch_size: 10, lr: 1.0e-3, weight_decay: 1.0e-2, scheduler: steplr,
+          lr_step_size: 50, lr_gamma: 0.9}   # QCD: 60 epochs (3000 iterations of batch 10); 300 here
+pca_net:
+  seed: 0
+  train: {range: [0, 500]}
+  val: {range: [4500, 5000]}
+  model: {num_input_basis: 20, num_output_basis: 128, hidden_dims: [1024, 2048, 1024], activation: selu}
+  standardize_input: true
+  standardize_output: true
+  optim: {epochs: 3000, batch_size: 500, lr: 1.0e-3, weight_decay: 1.0e-2, lr_step_size: 50, lr_gamma: 0.9}
+fc_pino:
+  seed: 0
+  train: {range: [0, 1000]}
+  val: {range: [4500, 5000]}
+  physics_range: [0, 3000]         # the 3000 residual parameters of the RBNO
+  model: {modes: [32, 32], hidden_channels: 128, n_layers: 4, fc_degree: 6, fc_cont_points: 50}
+  optim: {data_iterations: 3000, physics_iterations: 3000, batch_size: 10, lr: 1.0e-3, weight_decay: 1.0e-2,
+          lr_gamma: 0.8, grad_clip: 1.0, validate_every: 25}
+  weights: {physics: 1.0, bc: 1.0, data: 1.0}
+rbno_data_loss:                    # network, optimizer and schedule of the RBNO (configs/semilinear_k1000.yaml)
+  seed: 0
+  train: {range: [0, 500]}
+  val: {range: [4500, 5000]}
+  epochs: 100                      # as the RBNO
+  batch_size: 50

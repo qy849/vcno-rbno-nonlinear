@@ -1,0 +1,3 @@
+# Stage 3: combine the two improvements of stage 2 (more steps, lower final lr).
+lr1.0e-2_bs100_e200_min100 train.optimizer.lr=1.0e-2 train.optimizer.muon_lr=1.0e-2 train.optimizer.adam_lr=1.0e-2 train.batch_size=100 train.epochs=200 train.scheduler.t_max=200 train.scheduler.eta_min=1.0e-04
+lr3.0e-3_bs50_e100_min100 train.optimizer.lr=3.0e-3 train.optimizer.muon_lr=3.0e-3 train.optimizer.adam_lr=3.0e-3 train.batch_size=50 train.epochs=100 train.scheduler.t_max=100 train.scheduler.eta_min=3.0e-05
