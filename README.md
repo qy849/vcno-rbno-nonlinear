@@ -131,7 +131,7 @@ This repository is distributed under the GNU General Public License version 2 (`
 If this repository is useful in your research, please cite:
 
 ```bibtex
-@article{qiu2026variationally,
+@article{qiu2026nonlinear,
   title={Variationally correct operator learning for nonlinear parametric partial differential equations},
   author={Qiu, Yuan and Dahmen, Wolfgang and Chen, Peng},
   year={2026}
@@ -141,10 +141,13 @@ If this repository is useful in your research, please cite:
 and the linear counterpart:
 
 ```bibtex
-@article{qiu2025variationally,
+@article{qiu2026variationally,
   title={Variationally correct operator learning: Reduced basis neural operator with a posteriori error estimation},
   author={Qiu, Yuan and Dahmen, Wolfgang and Chen, Peng},
-  journal={arXiv preprint arXiv:2512.21319},
-  year={2025}
+  journal={Computer Methods in Applied Mechanics and Engineering},
+  volume={461},
+  pages={119228},
+  year={2026},
+  publisher={Elsevier}
 }
 ```
