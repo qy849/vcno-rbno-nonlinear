@@ -2,8 +2,8 @@
 # Download the parameter samples, POD bases and final RBNO checkpoints into the repository.
 #   bash scripts/download_data.sh <base_url> [semilinear|quasilinear|hyperelastic ...]
 # e.g.
-#   bash scripts/download_data.sh https://huggingface.co/datasets/<user>/<dataset>/resolve/main
-#   bash scripts/download_data.sh https://huggingface.co/datasets/<user>/<dataset>/resolve/main quasilinear
+#   bash scripts/download_data.sh https://huggingface.co/datasets/yqiu327/vcno-rbno-nonlinear-results/resolve/main
+#   bash scripts/download_data.sh https://huggingface.co/datasets/yqiu327/vcno-rbno-nonlinear-results/resolve/main quasilinear
 # Files already present with the right checksum are skipped.
 set -euo pipefail
 repo_path="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"

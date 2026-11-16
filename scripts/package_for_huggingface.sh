@@ -1,13 +1,15 @@
 #!/usr/bin/env bash
 # Stage the files hosted on Hugging Face (parameter samples, POD bases, final RBNO checkpoints)
 # in <out_dir> under their repository paths, together with manifest.tsv (path, sha256, bytes).
-#   bash scripts/package_for_huggingface.sh <out_dir>
+#   bash scripts/package_for_huggingface.sh <out_dir> [source_dir]
+# source_dir holds the generated data/, checkpoints/ and results/ (default: this repository).
 # Upload <out_dir> afterwards, e.g.
 #   hf upload <user>/<dataset> <out_dir> . --repo-type dataset
 set -euo pipefail
 repo_path="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
-out="${1:?usage: bash scripts/package_for_huggingface.sh <out_dir>}"
-cd "$repo_path"
+out="${1:?usage: bash scripts/package_for_huggingface.sh <out_dir> [source_dir]}"
+mkdir -p "$out"; out="$(cd "$out" && pwd)"
+cd "${2:-$repo_path}"
 
 files=()
 for family in semilinear quasilinear hyperelastic; do

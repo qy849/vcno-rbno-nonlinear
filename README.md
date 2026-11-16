@@ -60,10 +60,10 @@ Create the parameter samples, finite element solutions and POD bases of an exper
 bash scripts/01_data.sh configs/quasilinear.yaml
 ```
 
-The parameter samples, the POD bases and the trained RBNO checkpoints of the paper are available on Hugging Face. Download them into `data/`, `checkpoints/` and `results/` (optionally for a subset of `semilinear quasilinear hyperelastic`):
+The parameter samples, the POD bases and the trained RBNO checkpoints of the paper are available on [Hugging Face](https://huggingface.co/datasets/yqiu327/vcno-rbno-nonlinear-results). Download them into `data/`, `checkpoints/` and `results/` (optionally for a subset of `semilinear quasilinear hyperelastic`):
 
 ```bash
-bash scripts/download_data.sh https://huggingface.co/datasets/<user>/<dataset>/resolve/main
+bash scripts/download_data.sh https://huggingface.co/datasets/yqiu327/vcno-rbno-nonlinear-results/resolve/main
 ```
 
 Each step skips work that is already done, so with the downloaded files `01_data.sh` only computes the finite element solutions, and `02_rbno.sh` evaluates the downloaded checkpoint instead of training a new one (delete `checkpoints/<exp>/rbno/best_val.pt` to retrain). The POD bases must be downloaded together with the checkpoints: the networks predict coefficients in these bases.
