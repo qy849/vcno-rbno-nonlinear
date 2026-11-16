@@ -36,6 +36,7 @@ export PYTHONPATH=$PWD/src:$PWD/baselines OMP_NUM_THREADS=1
 ```
 
 Packages and their versions used in the paper runs:
+
 - Python `3.11`
 - DOLFINx `0.10.0`
 - PyTorch `>= 2.9`
@@ -43,12 +44,12 @@ Packages and their versions used in the paper runs:
 
 ## Problem setups
 
-| Experiment | Problem | Parameter | Train / val / test | $N_{\mathrm{POD}}$ / $r$ |
-|---|---|---|---|---|
-| `semilinear_k0` | heat conduction ($\kappa = 0$) | conductivity on 16 squares | 3000 / 500 / 500 | 500 / 128 |
-| `semilinear_k1000` | $-\nabla\cdot(p\nabla u) + 10^3u^3 = f$ | same samples | 3000 / 500 / 500 | 500 / 128 |
-| `quasilinear` | $-\nabla\cdot(p(1+u^2)\nabla u) = f$ | $p = 0.01 + e^m$ | 8000 / 800 / 500 | 1000 / 512 |
-| `hyperelastic` | compressible Neo-Hookean, traction | $p = 1 + e^m$ | 5000 / 500 / 500 | 1000 / 256 |
+| Experiment           | Problem                                   | Parameter                  | Train / val / test | $N_{\mathrm{POD}}$ / $r$ |
+| -------------------- | ----------------------------------------- | -------------------------- | ------------------ | ---------------------------- |
+| `semilinear_k0`    | heat conduction ($\kappa = 0$)          | conductivity on 16 squares | 3000 / 500 / 500   | 500 / 128                    |
+| `semilinear_k1000` | $-\nabla\cdot(p\nabla u) + 10^3u^3 = f$ | same samples               | 3000 / 500 / 500   | 500 / 128                    |
+| `quasilinear`      | $-\nabla\cdot(p(1+u^2)\nabla u) = f$    | $p = 0.01 + e^m$         | 8000 / 800 / 500   | 1000 / 512                   |
+| `hyperelastic`     | compressible Neo-Hookean, traction        | $p = 1 + e^m$            | 5000 / 500 / 500   | 1000 / 256                   |
 
 All experiments use $RT_1 \times CG_2$ elements on a structured triangulation ($128\times128$ cells of the unit square, $128\times64$ cells of $(0,2)\times(0,1)$ for hyperelasticity) and Gauss–Newton for the discrete normal equations. `semilinear_k0` is the heat conduction problem of [vcno-rbno](https://github.com/qy849/vcno-rbno) (`poisson_setup1`) with the same parameter samples, and is used as a regression check of the nonlinear code.
 
@@ -76,16 +77,16 @@ bash scripts/run_all.sh 2>&1 | tee logs/run_all.log
 
 runs all steps below in order. The scripts launch `NPROCS` MPI ranks (default 60) for the CPU stages and train on a vacant GPU among `GPUS` (default `"0 1"`); set both to match your machine, e.g. `NPROCS=16 GPUS=0 bash scripts/run_all.sh`.
 
-| Step | Command | Output |
-|---|---|---|
-| 1. Parameters, finite element solutions, POD | `bash scripts/01_data.sh configs/<exp>.yaml` | `data/` |
-| 2. RBNO: train, predict, evaluate, time | `bash scripts/02_rbno.sh configs/<exp>.yaml` | `checkpoints/<exp>/rbno`, `results/<exp>/rbno` |
-| 3. Baselines | `bash scripts/03_baselines.sh <exp>` | `results/<exp>/<method>` |
-| 4. Reduced minimizers | `bash scripts/08_reduced_opt.sh configs/<exp>.yaml` | `results/<exp>/reduced_opt` |
-| 5. Stability test | `bash scripts/04_stability.sh configs/<exp>.yaml` | `analysis/<exp>/stability` |
-| 6. Figures and tables | `bash scripts/05_figures_tables.sh` | `figures/`, `docs/` |
-| 7. Quadrature study (optional) | `bash scripts/06_quadrature.sh` | `analysis/<exp>/quadrature` |
-| 8. Hyperparameter search (optional) | `bash scripts/07_tune.sh configs/<exp>.yaml configs/tune/<grid>.txt` | `results/<exp>/tune` |
+| Step                                         | Command                                                                | Output                                             |
+| -------------------------------------------- | ---------------------------------------------------------------------- | -------------------------------------------------- |
+| 1. Parameters, finite element solutions, POD | `bash scripts/01_data.sh configs/<exp>.yaml`                         | `data/`                                          |
+| 2. RBNO: train, predict, evaluate, time      | `bash scripts/02_rbno.sh configs/<exp>.yaml`                         | `checkpoints/<exp>/rbno`, `results/<exp>/rbno` |
+| 3. Baselines                                 | `bash scripts/03_baselines.sh <exp>`                                 | `results/<exp>/<method>`                         |
+| 4. Reduced minimizers                        | `bash scripts/08_reduced_opt.sh configs/<exp>.yaml`                  | `results/<exp>/reduced_opt`                      |
+| 5. Stability test                            | `bash scripts/04_stability.sh configs/<exp>.yaml`                    | `analysis/<exp>/stability`                       |
+| 6. Figures and tables                        | `bash scripts/05_figures_tables.sh`                                  | `figures/`, `docs/`                            |
+| 7. Quadrature study (optional)               | `bash scripts/06_quadrature.sh`                                      | `analysis/<exp>/quadrature`                      |
+| 8. Hyperparameter search (optional)          | `bash scripts/07_tune.sh configs/<exp>.yaml configs/tune/<grid>.txt` | `results/<exp>/tune`                             |
 
 Steps 3–5 need steps 1 and 2 of the same experiment, and step 6 needs all of them. Baselines and the stability test are run for `semilinear_k1000`, `quasilinear` and `hyperelastic`.
 
@@ -103,6 +104,7 @@ mpirun -n 60 python -m rbno.evaluate configs/quasilinear.yaml --method rbno
 The RBNO predicts the coefficients of a POD basis of the conforming finite element space and is trained on the FOSLS loss only. The loss and its gradient with respect to the finite element state are assembled by DOLFINx on CPU workers (`rbno.train`), and the gradient is passed to the network through the chain rule. The checkpoint with the smallest validation loss is kept.
 
 Models covered:
+
 - Reduced Basis Neural Operator (RBNO), FOSLS loss: `src/rbno/train.py`
 - RBNO, data loss in the $L_2$ or $H(\mathrm{div})\times H^1$ norm: `baselines/rbno_data_loss.py`
 - Fourier Neural Operator (FNO): `baselines/fno.py`
@@ -128,7 +130,7 @@ This repository is distributed under the GNU General Public License version 2 (`
 
 ## Citation
 
-If this repository is useful in your research, please cite:
+If this repository is useful in your research, please consider citing:
 
 ```bibtex
 @article{qiu2026nonlinear,
@@ -137,8 +139,6 @@ If this repository is useful in your research, please cite:
   year={2026}
 }
 ```
-
-and the linear counterpart:
 
 ```bibtex
 @article{qiu2026variationally,
