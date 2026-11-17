@@ -1,7 +1,7 @@
 # vcno-rbno-nonlinear
 
 Code for the paper
-*Variationally correct operator learning for nonlinear parametric partial differential equations*.
+*Variationally correct physics-informed operator learning for nonlinear partial differential equations*.
 
 This work extends variationally correct operator learning to nonlinear partial differential equations written as first-order systems. We show that, near a solution branch, the first-order system least-squares (FOSLS) residual is equivalent to the error in the graph norm of the system whenever the linearized residual is stable and its derivative is Lipschitz. Both conditions are verified for a monotone reaction (semilinear diffusion–reaction), for a diffusion coefficient that depends on the solution (quasilinear diffusion), and for compressible Neo-Hookean elasticity (hyperelasticity). A discrete version relates the loss of a finite element state to its distance from the finite element solution. A Reduced Basis Neural Operator (RBNO), with values in a conforming finite element space, is trained on this loss without nonlinear solves: the finite element library assembles the loss and its symbolically derived gradient, which the network receives through the chain rule.
 
@@ -134,7 +134,7 @@ If this repository is useful in your research, please consider citing:
 
 ```bibtex
 @article{qiu2026nonlinear,
-  title={Variationally correct operator learning for nonlinear parametric partial differential equations},
+  title={Variationally correct physics-informed operator learning for nonlinear partial differential equations},
   author={Qiu, Yuan and Dahmen, Wolfgang and Chen, Peng},
   year={2026}
 }
